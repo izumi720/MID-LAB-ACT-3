@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Records</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Records</h2>
+
+        <!-- Add Record Form -->
+        <form id="addRecordForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" class="form-control" id="description" required>
+            </div>
+            <button type="submit" class="btn btn-success">Add Record</button>
+        </form>
+
+        <hr>
+
+        <!-- Records Table -->
+        <table class="table table-bordered mt-3">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody id="recordTable">
+                {% for record in records %}
+                <tr>
+                    <td>{{ record.id }}</td>
+                    <td>{{ record.name }}</td>
+                    <td>{{ record.description }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="/view-logs" class="btn btn-primary">View Logs</a>
+    </div>
+
+    <!-- JavaScript to Handle Form Submission -->
+    <script>
+        $(document).ready(function() {
+            $("#addRecordForm").submit(function(event) {
+                event.preventDefault();
+
+                let name = $("#name").val();
+                let description = $("#description").val();
+
+                $.ajax({
+                    url: "/create",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ name: name, description: description }),
+                    success: function(response) {
+                        alert(response.message);
+                        location.reload();  // Reload page to show new record
+                    },
+                    error: function(xhr) {
+                        alert("Error adding record");
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
